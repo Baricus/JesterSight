@@ -20,20 +20,21 @@ def detect(img):
     # combines for a true crown mask
     mTot = mRed+mYellow
 
-    # takes mean of pixels (we only care about channel 0)
-    channels = cv.mean(mTot)
+    # takes mean of pixels in each mask (we only care about channel 0)
+    channelsY = cv.mean(mYellow)
+    channelsR = cv.mean(mRed)
 
-    # prints the mask and original image (debug)
-    #print(channels)
+    # prints the masks and original image (debug)
+    print(channelsY[0], channelsR[0])
     cv.imshow('Matches', mTot)
     #cv.imshow('orig', img)
     cv.waitKey(1)
     
-    if (channels[0] > 70):
+    if (channelsY[0] > 50 and channelsR[0] > 50):
         return True
     return False
 
-    
+# 
 def beep():
     print("BEEP")
 
@@ -44,13 +45,13 @@ sct = mss()
 
 # sets up the scheduler for the timer
 scheduler = BackgroundScheduler()
-beepJob = scheduler.add_job(beep, 'interval', seconds=1, id='main_beep')
+beepJob = scheduler.add_job(beep, 'interval', seconds=22, id='main_beep')
 beepJob.pause()
 isRunning = False;
 scheduler.start()
 
 # counter for max misses
-counter = 10
+counter = 100
 
 while True:
     a = time.time()
@@ -59,10 +60,10 @@ while True:
     img = np.array(sct.grab(monitor))
     #grey = cv.cvtColor(img, cv.COLOR_BGR2GRAY)
 
-    # if we don't find the image 10 "frames" in a row, about 1/10 of a sec,
+    # if we don't find the image 100 "frames" in a row, about 1 sec,
     # stop the timer
     if detect(img):
-        counter = 10
+        counter = 100
     else:
         counter -= 1
 
