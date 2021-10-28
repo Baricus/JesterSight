@@ -10,11 +10,11 @@ def detect(img):
 
     # masks against both yellow and red
     lowerY = np.array([20, 80, 100])
-    upperY = np.array([30, 200, 200])
+    upperY = np.array([30, 200, 255])
     mYellow = cv.inRange(hsv_img, lowerY, upperY)
 
-    lowerR = np.array([0, 150, 120])
-    upperR = np.array([20, 220, 200])
+    lowerR = np.array([0, 140, 100])
+    upperR = np.array([20, 220, 255])
     mRed = cv.inRange(hsv_img, lowerR, upperR)
 
     # combines for a true crown mask
@@ -30,7 +30,7 @@ def detect(img):
     #cv.imshow('orig', img)
     cv.waitKey(1)
     
-    if (channelsY[0] > 50 and channelsR[0] > 50):
+    if (channelsY[0] + channelsR[0] > 30):
         return True
     return False
 
@@ -40,7 +40,7 @@ def beep():
 
 
 # sets monitor positions and initializes mss
-monitor = {"top": 8, "left": 40, "width": 65, "height": 27}
+monitor = {"top": 0, "left": 40, "width": 100, "height": 40}
 sct = mss()
 
 # sets up the scheduler for the timer
