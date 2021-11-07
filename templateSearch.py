@@ -1,3 +1,5 @@
+import time
+
 import cv2
 import numpy as np
 
@@ -16,8 +18,8 @@ def templateSearch(distT, template, threshold):
     height, width = distT.shape
     Theight, Twidth = template.shape
 
-    maxX = width - Twidth
-    maxY = height - Theight
+    maxX = width - Twidth - 1
+    maxY = height - Theight - 1
 
     # get's nonwhite locations in template
     pixels = np.argwhere(template != 255)
@@ -28,29 +30,41 @@ def templateSearch(distT, template, threshold):
 
     for x in range(maxX):
         for y in range(maxY):
-            locations = pixels + [y,x]
-            print(locations)
-            print("---------")
-            curSum = np.sum(distT[locations])
-            if curSum < minSum:
+            locations = pixels + [y, x]
+            # this indexing sucked but it works now
+            curSum = np.sum(distT[locations[:,0], locations[:,1]])
+            if curSum <= minSum:
                 minSum = curSum
                 minLoc = (x, y)
 
     if minSum < threshold:
-        return minLoc
+        # shifts minLoc to be the center of the template
+        minLoc = (minLoc[0] + int(Twidth/2), minLoc[1] + int(Theight/2))
+        return minLoc, minSum
     else:
-        return None
+        return None, minSum
 
 
 # test code
 from distTransform import *
-example = cv.imread('example.png')[0:100, 0:200]
-dists = dist_transform(example)
+import cv2 as cv
+example = cv.imread('example.png')[0:50, 25:120]
 template = cv.imread('assets/EdgeMaskSmall.png', cv.IMREAD_GRAYSCALE)
 
-pos = templateSearch(dists, template, 100000000000)
+start = time.perf_counter()
+dists = dist_transform(example)
+end = time.perf_counter()
+print("Time to dist_transform is:", end-start)
+
+start = time.perf_counter()
+pos, min = templateSearch(dists, template, 250)
+end = time.perf_counter()
+print("Time to template search is:", end-start)
+
+print("min value of func is:", min)
+
 if pos != None:
     x, y = pos
-    show = cv.circle(example, (y, x), 3, (255, 0, 0), 3)
+    show = cv.circle(example, (x, y), 3, (255, 0, 0), 3)
     cv.imshow("test", show)
     cv.waitKey(0)
