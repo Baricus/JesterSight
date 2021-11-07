@@ -1,5 +1,4 @@
 import math
-import sys
 import numpy as np
 import cv2 as cv
 
@@ -47,8 +46,10 @@ def dist_transform(img):
                 U = dists[y + 1][x]
             dists[y][x] = min(L + 1, U + 1, dists[y][x])
 
-    print(dists/dists.max())
-    cv.imshow('test', dists/dists.max())
-    cv.waitKey(0)
+    return dists
 
-dist_transform(cv.imread('example.png')[0:100, 0:200])
+# example use
+# dists = dist_transform(cv.imread('example.png')[0:100, 0:200])
+# print(dists/dists.max())
+# cv.imshow('test', dists/dists.max())
+# cv.waitKey(0)
