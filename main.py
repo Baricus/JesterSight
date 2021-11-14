@@ -28,11 +28,17 @@ if __name__ == '__main__':
         img = get_top_left()
 
         # we only care about leftmost half for crown checks
-        crownSpace = img[:, 0:150]
+        crownSpace = img[0:75, 0:150]
 
         # tries to find crown in image
+        # tends to find false positives of the rope pile if in frame
+        # tends to detect some other strong corners with current threshold
         dsts = dist_transform_cv2(crownSpace)
         pos, min = template_search(dsts, templateSmall, 200) # threshold needs adjusting!
+
+        # TODO color checks
+
+        # TODO swap to timer?
 
         # if we found the image, draw a circle
         # otherwise do nothing
@@ -42,7 +48,7 @@ if __name__ == '__main__':
         else:
             show = img
 
-        # show the screengrab with the circle
+        # show the screenshot with the circle
         cv2.imshow("output", crownSpace)
         cv2.waitKey(1)
 
