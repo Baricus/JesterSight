@@ -18,7 +18,7 @@ def hough_transform(img):
         cv.line(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
         
     #cv.imwrite('detected_lines.png', img)
-    return img
+    return img, lines_found
 
 #Code used to test above function
 #img = cv.imread('example.png')
