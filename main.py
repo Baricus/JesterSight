@@ -3,14 +3,13 @@ import cv2
 import mss
 import pytesseract
 
+
 def parse_string(string):
     mid = string.find('70')
-    #print(string + ' :: '+str(mid))
     if mid == -1:
         return -1
     else:
-        return string[mid-2:mid]
-
+        return string[mid - 2:mid]
 
 
 def get_top_left():
@@ -31,7 +30,6 @@ def get_top_right():
     cv2.waitKey(10)
     custom_config = r'--oem 3 --psm 6 outputbase digits'
     print(parse_string(pytesseract.image_to_string(img_right, config=custom_config)))
-
 
 
 if __name__ == '__main__':
