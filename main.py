@@ -29,13 +29,17 @@ if __name__ == '__main__':
 
         # TODO swap to timer?
 
-        # creates a higher contrast image for search (attempt to fix issues)
-        contrast = 3
-        brightness = -200
-        # r_contrast = cv2.addWeighted(imgR, contrast, imgR, 0, brightness)
-        cv2.imshow('imageR', imgR)
+        # works best on 300 dpi minimum so we scale up our image for more pixels
+        f = 3
+        size = (imgR.shape[1] * f, imgR.shape[0] * f)
+        scaled = cv2.resize(imgR, size)
+        # tesseract v4 wants black text so we invert the image
+        inverted = cv2.bitwise_not(scaled)
+        # also bump up the contrast
+        inverted = cv2.addWeighted(inverted, 3.2, inverted, 0, -175)
+        cv2.imshow('imageR', inverted)
         timer = get_timer(imgR)
-        print(timer)
+        # print(timer)
 
         # if we found the image, draw a circle
         # otherwise do nothing
