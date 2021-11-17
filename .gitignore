@@ -2,3 +2,4 @@
 .jpg
 *.iml
 .idea/*
+*.pyc
