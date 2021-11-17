@@ -25,7 +25,7 @@ def get_timer(img):
     :return: a text based representation of the timer
     """
     # detect text in the image using pytesseract
-    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789:/'
+    custom_config = r'--oem 3 --psm 6 outputbase digits'
     str = pytesseract.image_to_string(img, config=custom_config)
     print (str)
     return _parse_string(str)

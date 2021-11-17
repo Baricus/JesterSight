@@ -32,9 +32,9 @@ if __name__ == '__main__':
         # creates a higher contrast image for search (attempt to fix issues)
         contrast = 3
         brightness = -200
-        r_contrast = cv2.addWeighted(imgR, contrast, imgR, 0, brightness)
-        cv2.imshow('imageR', r_contrast)
-        timer = get_timer(r_contrast)
+        # r_contrast = cv2.addWeighted(imgR, contrast, imgR, 0, brightness)
+        cv2.imshow('imageR', imgR)
+        timer = get_timer(imgR)
         print(timer)
 
         # if we found the image, draw a circle
