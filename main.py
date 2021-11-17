@@ -13,18 +13,19 @@ def get_top_left():
     cv2.imshow('image', img_left)
     cv2.waitKey(10)
 
-def top_left_region(width, height):
-    left = width * 2 // 100  # 2% from the left
-    top = height * 0 // 100  # 5% from the top
-    right = left + width * 4.5 // 100 # +4.5% right
-    lower = top + height * 4.5 // 100 # +4.5% down
-    return (left, top, right, lower)
+def get_per_region(width, height, leftPer, topPer, rightPer, downPer):
+    left = width * (leftPer / 100)  # 2% from the left
+    top = height * (topPer / 100)  # 0% from the top
+    right = left + (width * (rightPer / 100)) # +4.5% right
+    lower = top + (height * (downPer / 100)) # +4.5% down
+    return int(left), int(top), int(right), int(lower)
 
 def get_top_left_UI():
     """
     get_top_left_UI
 
     Screenshot and grab a region (left: 2%, top: 0%, right: +4.5%, lower: +4.5%) of monitor
+    This is where the crown resides in all UI scales
     :return: image of cropped region
     :return (width, height) of entire screen
     """
@@ -32,25 +33,15 @@ def get_top_left_UI():
         # Use the 1st monitor
         monitor = sct.monitors[1]
 
-        # left = monitor["left"] + monitor["width"] * 2 // 100  # 2% from the left
-        # top = monitor["top"] + monitor["height"] * 0 // 100  # 5% from the top
-        # right = left + monitor["width"] * 4.5 // 100 # +4.5% right
-        # lower = top + monitor["height"] * 4.5 // 100 # +4.5% down
-        # bbox = (left, top, right, lower)
-        bbox = top_left_region(monitor["width"], monitor["height"])
+        # where the crown resides in all UI scales
+        left, top, right, lower = get_per_region(monitor["width"], monitor["height"], 2, 0, 4.5, 4.5)
+        bbox = (left, top, right, lower)
 
         # Grab the picture
         # Using PIL would be something like:
         # im = ImageGrab(bbox=bbox)
         img_left = sct.grab(bbox)
         return np.array(img_left), (monitor["width"], monitor["height"])
-
-    # sct = mss.mss()
-    # monitor_left = {'top': 0, 'left': 0, 'width': 300, 'height': 100}
-    # screen_left = sct.grab(monitor_left)
-    # img_left = np.array(screen_left)
-    # cv2.imshow('image', img_left)
-    # cv2.waitKey(10)
 
 def get_top_right():
     sct = mss.mss()
@@ -61,7 +52,7 @@ def get_top_right():
     cv2.waitKey(10)
 
 from distTransform import dist_transform, dist_transform_cv2
-from templateSearch import template_search, templateSearchUI
+from templateSearch import templateSearch
 
 # defines small UI template
 templateSmall = cv2.imread('assets/EdgeMaskSmall.png', cv2.IMREAD_GRAYSCALE)
@@ -81,7 +72,7 @@ if __name__ == '__main__':
         # tends to detect some other strong corners with current threshold
         dsts = dist_transform_cv2(crownSpace)
         # pos, min = template_search(dsts, templateSmall, 200) # threshold needs adjusting!
-        pos, min = template_searchUI(dsts, templateSmall, 200, screenDim) # threshold needs adjusting!
+        pos, min = templateSearch(dsts, templateSmall, 200) # threshold needs adjusting!
 
         # TODO color checks
 
