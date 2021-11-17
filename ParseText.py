@@ -10,15 +10,14 @@ def _parse_string(string):
     :param string: the timer string from getTimer
     :return: the seconds of the timer
     """
-    # detect the center slash of the timer(detects as a 7)
+
     colon = string.find(':')
-    mid = -1
-    if mid == -1:
+    if colon == -1:
         # return a -1 if not found
         return -1
     else:
         # return the two numbers before the middle
-        return string[mid - 2:mid]
+        return string[colon+1:colon+3]
 
 
 def get_timer(img):
@@ -28,9 +27,8 @@ def get_timer(img):
     :return: a text based representation of the timer
     """
     # detect text in the image using pytesseract
-    custom_config = r'-l eng --dpi 300 --oem 1 --psm 7 -c tessedit_char_whitelist=0123456789/:'
+    custom_config = r'-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=0123456789/:'
     out = pytesseract.image_to_string(img, lang='eng', config=custom_config)
-    print("string is:", out)
     return _parse_string(out)
 
 # old code for get_timer
