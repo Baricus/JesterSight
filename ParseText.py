@@ -3,7 +3,7 @@ import pytesseract
 pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tesseract.exe'
 
 
-def _parse_string(string):
+def _parse_string_timer(string):
     """
     parses the time string to return the number of seconds
     passed in the level
@@ -36,7 +36,19 @@ def get_timer(img):
     # detect text in the image using pytesseract
     custom_config = r'-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=0123456789/:'
     out = pytesseract.image_to_string(img, lang='eng', config=custom_config)
-    return _parse_string(out)
+    return _parse_string_timer(out)
+
+
+def get_level(img):
+    """
+    uses pytesseract to parse the timer from the text in the game
+    :param img: the minimal screenshot containing the level number
+    :return: a text based representation of the level number
+    """
+    # detect text in the image using pytesseract
+    custom_config = r'-l eng --oem 1 --psm 7 -c tessedit_char_whitelist=0123456789-'
+    out = pytesseract.image_to_string(img, lang='eng', config=custom_config)
+    return out
 
 # old code for get_timer
 # sct = mss.mss()

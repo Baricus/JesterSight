@@ -3,10 +3,11 @@ import cv2
 from getUI import *
 from distTransform import dist_transform, dist_transform_cv2
 from templateSearch import template_search
-from ParseText import get_timer
+from ParseText import get_timer, get_level
 
 # defines small UI template
 templateSmall = cv2.imread('assets/EdgeMaskSmall.png', cv2.IMREAD_GRAYSCALE)
+
 
 def check_crown(thresh):
     """
@@ -67,22 +68,44 @@ def check_timer():
     cv2.imshow('timer', inverted)
     cv2.waitKey(1)
 
-
     return get_timer(imgR)
 
 
+def check_level():
+    """
+    checks the level number
+    :return: the level number
+    """
+    # capture the level number and return the string
+    imgT = get_level_num()
+    level = get_level(imgT)
+    global prev_level
+    dash = level.find('-')
+    if dash == -1:
+        return "paused"
+    elif level == prev_level:
+        prev_level = level
+        return "same"
+    elif level != prev_level:
+        prev_level = level
+        return "new"
+    else:
+        return "same"
+
 has_crown = False
 acquire_time = -1
-prev_time = -1;
+prev_time = -1
+prev_level = -1
 
 # time into the cycle to warn player (eventually plus sound to play)
-alarms = [22-5, 22-4, 22-3, 22-2]
+alarms = [22 - 5, 22 - 4, 22 - 3, 22 - 2]
 unfired_alarms = alarms.copy()
 
 if __name__ == '__main__':
+
     while True:
         # TODO determine level
-
+        level = check_level()
         # if we don't have the crown, check if we do and continue
         if not has_crown:
             has_crown = check_crown(200)
@@ -123,6 +146,6 @@ if __name__ == '__main__':
                 acquire_time = acquire_time + 22
                 unfired_alarms = alarms.copy()
 
-            print("cur_time:", cur_time)
-            print("acquire_time:", acquire_time)
-            print()
+            #print("cur_time:", cur_time)
+            #print("acquire_time:", acquire_time)
+            #print()

@@ -16,7 +16,6 @@ def get_top_left():
     return np.array(screen_left, dtype="uint8")
 
 
-
 def get_top_right():
     """
     :return: a screenshot of the top right UI (1080p configured)
@@ -24,3 +23,12 @@ def get_top_right():
     monitor_right = {'top': 50, 'left': 1920 - 325, 'width': 175, 'height': 50}
     screen_right = sct.grab(monitor_right)
     return np.array(screen_right)
+
+
+def get_level_num():
+    """
+    :return: a screenshot of the level number UI (1080p configured)
+    """
+    monitor_num = {'top': 50, 'left': 1920 - 100, 'width': 70, 'height': 40}
+    screen_num = sct.grab(monitor_num)
+    return np.array(screen_num, dtype="uint8")
