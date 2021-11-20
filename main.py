@@ -12,7 +12,7 @@ def check_crown(thresh):
     """
     checks for the true crown in the image
     :param thresh: the threshold for the crown's presence (200 is our current)
-    :return: the position if present, nothing if not
+    :return: true if the crown is present, false if not
     """
     imgL = get_top_left()
 
@@ -42,7 +42,9 @@ def check_crown(thresh):
     cv2.waitKey(1)
     """
 
-    return pos
+    if pos is not None:
+        return True
+    return False
 
 
 def check_timer():
@@ -61,16 +63,66 @@ def check_timer():
     inverted = cv2.addWeighted(inverted, 3.2, inverted, 0, -175)
 
     # debug display
+
     cv2.imshow('timer', inverted)
     cv2.waitKey(1)
+
 
     return get_timer(imgR)
 
 
+has_crown = False
+acquire_time = -1
+prev_time = -1;
+
+# time into the cycle to warn player (eventually plus sound to play)
+alarms = [22-5, 22-4, 22-3, 22-2]
+unfired_alarms = alarms.copy()
+
 if __name__ == '__main__':
     while True:
-        # position = check_crown(200)
+        # TODO determine level
 
-        # TODO swap to timer?
+        # if we don't have the crown, check if we do and continue
+        if not has_crown:
+            has_crown = check_crown(200)
 
-        print(check_timer())
+        # if we do have the crown, start checking for time
+        if has_crown:
+            cur_time = check_timer()
+            # filter invalid times
+            if cur_time < 0:
+                continue
+
+            # if we have no previous time get it
+            if prev_time == -1:
+                prev_time = cur_time
+
+            # TODO ensure time delta isn't too great
+            # (needs tweaking)
+            if abs(cur_time - prev_time) > 3:
+                prev_time = cur_time
+                continue
+
+            # if we don't have the acquired time, get it
+            if acquire_time == -1:
+                acquire_time = cur_time
+            # if not, check if we're past a warning time:
+            else:
+                # TODO add sounds to alarms (tuples of seconds_left, time)
+                if len(unfired_alarms) > 0:
+                    time = unfired_alarms[0] + acquire_time
+                    if time <= cur_time:
+                        print("WARNING:", time)
+
+                        # pop the time so it stops firing
+                        unfired_alarms.pop(0)
+
+            # resets every 22 seconds
+            if acquire_time + 22 < cur_time:
+                acquire_time = acquire_time + 22
+                unfired_alarms = alarms.copy()
+
+            print("cur_time:", cur_time)
+            print("acquire_time:", acquire_time)
+            print()

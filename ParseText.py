@@ -5,19 +5,26 @@ pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tessera
 
 def _parse_string(string):
     """
-    parses the time string to return the number of seconds currently
-    present
+    parses the time string to return the number of seconds
+    passed in the level
     :param string: the timer string from getTimer
-    :return: the seconds of the timer
+    :return: the seconds elapsed
     """
 
+    #TODO replace with strptime for rhobustness
     colon = string.find(':')
     if colon == -1:
         # return a -1 if not found
         return -1
     else:
-        # return the two numbers before the middle
-        return string[colon+1:colon+3]
+        mins = string[0:colon]
+        secs = string[colon+1:colon+3]
+        try:
+            mins = int(mins)
+            secs = int(secs)
+            return 60 * mins + secs
+        except:
+            return -1
 
 
 def get_timer(img):
