@@ -1,39 +1,39 @@
 import cv2 as cv
 
-LEFT = 30  #Color of the left side of the crown
-RIGHT = 25 #Color of the right side of the crown
+LEFT = 30  # Color of the left side of the crown
+RIGHT = 25 # Color of the right side of the crown
 
-#Note: When passing in x and y points, you need to be very careful. I pushed
-#an image named "example_for_cc.png", the green dot is approx the position of the point you need to push in.
-#You may need to change the MOE.
+# Note: When passing in x and y points, you need to be very careful. I pushed
+# an image named "example_for_cc.png", the green dot is approx the position of the point you need to push in.
+# You may need to change the MOE.
  
 def color_check(img, xpos, ypos):
-    #This functions takes in a black and white image being looked at and 
-    #the center point of what we believe is potentially the crown.
-    #The output is false if the color to the left and right of the given point 
-    #does not match the color of the crown or the output is true if the color 
-    #to he left and right of the given point matches the color of the crown 
+    # This functions takes in a black and white image being looked at and
+    # the center point of what we believe is potentially the crown.
+    # The output is false if the color to the left and right of the given point
+    # does not match the color of the crown or the output is true if the color
+    # to he left and right of the given point matches the color of the crown
         
-    #Getting left and right pixel intensity values 
+    # Getting left and right pixel intensity values
     left_of_point = img[xpos - 5, ypos]
     right_of_point = img[xpos + 5, ypos]
     MOE = 5
-    #print(left_of_point)
-    #print(right_of_point)
+    # print(left_of_point)
+    # print(right_of_point)
     
-    #Checking the left to see if it matches the color of the crown
+    # Checking the left to see if it matches the color of the crown
     if(LEFT - MOE <= left_of_point and LEFT + MOE >= left_of_point) :
         left_test = True
     else:
         left_test = False        
     
-    #Checking the right to see if it matches the color of the crown
+    # Checking the right to see if it matches the color of the crown
     if(RIGHT - MOE <= right_of_point and RIGHT + MOE >= right_of_point):
         right_test = True
     else:
         right_test = False 
     
-    #Checking to see if both tests passe or not
+    # Checking to see if both tests passe or not
     if(left_test == True and right_test == True):
         return True
     else:
