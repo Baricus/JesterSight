@@ -1,9 +1,9 @@
 import cv2
 
 from getUI import *
-from distTransform import dist_transform, dist_transform_cv2
-from templateSearch import template_search
-from ParseText import get_timer, get_level
+from dist_transform import dist_transform, dist_transform_cv2
+from template_search import template_search
+from parse_text import get_timer, get_level
 
 # defines small UI template
 templateSmall = cv2.imread('assets/EdgeMaskSmall.png', cv2.IMREAD_GRAYSCALE)

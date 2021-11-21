@@ -1,6 +1,6 @@
 import pytesseract
 
-pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tesseract.exe'
+#pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tesseract.exe'
 
 
 def _parse_string_timer(string):
@@ -17,7 +17,7 @@ def _parse_string_timer(string):
         # return a -1 if not found
         return -1
     else:
-        mins = string[0:colon]
+        mins = string[colon-2:colon]
         secs = string[colon+1:colon+3]
         try:
             mins = int(mins)
