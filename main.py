@@ -1,6 +1,6 @@
 import cv2
 
-from getUI import *
+from get_ui import *
 from dist_transform import dist_transform, dist_transform_cv2
 from template_search import template_search
 from parse_text import get_timer, get_level
