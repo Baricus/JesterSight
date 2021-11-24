@@ -4,6 +4,7 @@ from get_ui import *
 from dist_transform import dist_transform, dist_transform_cv2
 from template_search import template_search
 from parse_text import get_timer, get_level
+from check_color_rgb import color_check
 
 # defines small UI template
 templateSmall = cv2.imread('assets/EdgeMaskSmall.png', cv2.IMREAD_GRAYSCALE)
@@ -27,13 +28,19 @@ def check_crown(thresh):
     pos, min = template_search(dsts, templateSmall, thresh)
 
     # TODO color checks
+    if pos is not None:
+        x, y = pos
+        colors = color_check(crownSpace, x, y)
+
+        if not colors:
+            pos = None
 
     # debug printing
-    """
+
     # if we found the image, draw a circle
     # otherwise do nothing
-    if position != None:
-        x, y = position
+    if pos != None:
+        x, y = pos
         show = cv2.circle(imgL, (x, y), 3, (255, 0, 0), 3)
     else:
         show = imgL
@@ -41,7 +48,6 @@ def check_crown(thresh):
     # show the screenshot with the circle
     cv2.imshow("output", crownSpace)
     cv2.waitKey(1)
-    """
 
     if pos is not None:
         return True
@@ -55,20 +61,23 @@ def check_timer():
     """
     imgR = get_top_right()
     # works best on 300 dpi minimum so we scale up our image for more pixels
-    f = 3
+    f = 2
     size = (imgR.shape[1] * f, imgR.shape[0] * f)
     scaled = cv2.resize(imgR, size)
     # tesseract v4 wants black text so we invert the image
     inverted = cv2.bitwise_not(scaled)
     # also bump up the contrast
-    inverted = cv2.addWeighted(inverted, 3.2, inverted, 0, -175)
+    inverted = cv2.addWeighted(inverted, 4, inverted, 0, -175)
+    # erode it slightly
+    eroded = cv2.erode(inverted, None, iterations=1)
+    ret, threshed = cv2.threshold(eroded, 127, 255, cv2.THRESH_BINARY_INV)
 
     # debug display
 
-    cv2.imshow('timer', inverted)
+    cv2.imshow('timer', threshed)
     cv2.waitKey(1)
 
-    return get_timer(imgR)
+    return get_timer(threshed)
 
 
 def check_level():
@@ -109,6 +118,8 @@ if __name__ == '__main__':
         # if we don't have the crown, check if we do and continue
         if not has_crown:
             has_crown = check_crown(200)
+            if has_crown:
+                print("Got crown")
 
         # if we do have the crown, start checking for time
         if has_crown:
@@ -146,6 +157,6 @@ if __name__ == '__main__':
                 acquire_time = acquire_time + 22
                 unfired_alarms = alarms.copy()
 
-            #print("cur_time:", cur_time)
-            #print("acquire_time:", acquire_time)
-            #print()
+            print("cur_time:", cur_time)
+            print("acquire_time:", acquire_time)
+            print()

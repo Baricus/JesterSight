@@ -1,4 +1,5 @@
 import cv2 as cv
+import numpy as np
 
 LEFT = [50, 37, 35] #Color of the left side of the crown
 RIGHT = [33, 23, 21] #Color of the right side of the crown
@@ -12,38 +13,30 @@ def color_check(img, xpos, ypos):
     #the center point of what we believe is potentially the crown.
     #The output is false if the color to the left and right of the given point 
     #does not match the color of the crown or the output is true if the color 
-    #to he left and right of the given point matches the color of the crown 
-        
-    #Getting left and right pixel intensity values 
-    left_of_point = img[xpos - 5, ypos]
-    right_of_point = img[xpos + 5, ypos]
-    MOE = 5
-    #print(left_of_point)
-    #print(right_of_point)
-    count = 0
-
-    #Checking the left to see if it matches the color of the crown
-    for i in left_of_point:    
-        if(LEFT[count] - MOE <= i and LEFT[count] + MOE >= i) :
-            left_test = True
-        else:
-            left_test = False
-        count = count + 1        
-    
-    count = 0
-    #Checking the right to see if it matches the color of the crown
-    for i in right_of_point: 
-        if(RIGHT[count] - MOE <= i and RIGHT[count] + MOE >= i):
-            right_test = True
-        else:
-            right_test = False 
-        count = count + 1 
-    
-    #Checking to see if both tests passe or not
-    if(left_test == True and right_test == True):
-        return True
-    else:
+    #to he left and right of the given point matches the color of the crown
+    height, width, channels = img.shape
+    if xpos < 3 or xpos > width-3:
         return False
+    if ypos < 3 or ypos > height-3:
+        return False
+
+    # grabs 2 3x3 patches to left and right of crown by 3 spaces
+    lpatch = img[ypos-1:ypos+2,xpos-5:xpos-2]
+    rpatch = img[ypos-1:ypos+2,xpos+3:xpos+6]
+
+    l_hsv = cv.cvtColor(lpatch, cv.COLOR_BGR2HSV)
+    lowerY = np.array([20, 80, 100])
+    upperY = np.array([30, 200, 255])
+    mYellow = cv.inRange(l_hsv, lowerY, upperY)
+
+    r_hsv = cv.cvtColor(rpatch, cv.COLOR_BGR2HSV)
+    lowerR = np.array([0, 140, 100])
+    upperR = np.array([20, 220, 255])
+    mRed = cv.inRange(r_hsv, lowerR, upperR)
+
+    if np.average(mYellow) > 200 and np.average(mRed) > 200:
+        return True
+    return False
 
 #Code used to test funcion
 #This will display all the available mouse click events  

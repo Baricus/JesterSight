@@ -5,8 +5,8 @@ import os
 import time
 
 # test code HUD
-from distTransform import *
-from templateSearch import templateSearch
+from dist_transform import *
+from template_search import template_search
 # from main.py. No circular import
 
 # region test globals
