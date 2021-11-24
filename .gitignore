@@ -4,3 +4,4 @@
 .idea/*
 *.pyc
 tesseractv5.0.0-rc1.20211030/*
+*.pyc
