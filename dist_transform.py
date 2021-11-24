@@ -7,7 +7,6 @@ def dist_transform(img):
     """
     takes in an image and computes it's
     distance transform with a 2 pass algorithm.
-
     This is probably too slow so using cv2's
     implementation in the final is probably good
     :param img: an image to calculate the transform on
