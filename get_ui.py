@@ -29,6 +29,6 @@ def get_level_num():
     """
     :return: a screenshot of the level number UI (1080p configured)
     """
-    monitor_num = {'top': 50, 'left': 1920 - 100, 'width': 70, 'height': 40}
+    monitor_num = {'top': 55, 'left': 1920 - 90, 'width': 55, 'height': 45}
     screen_num = sct.grab(monitor_num)
     return np.array(screen_num, dtype="uint8")

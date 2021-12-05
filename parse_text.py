@@ -46,7 +46,7 @@ def get_level(img):
     :return: a text based representation of the level number
     """
     # detect text in the image using pytesseract
-    custom_config = r'-l eng --oem 3 --psm 7 -c tessedit_char_whitelist=0123456789-'
+    custom_config = r'--oem 3 --psm 6 -c tessedit_char_whitelist=0123456789-—'
     out = pytesseract.image_to_string(img, lang='eng', config=custom_config)
     return out
 

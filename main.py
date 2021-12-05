@@ -46,13 +46,12 @@ def check_crown(thresh):
         show = imgL
 
     # show the screenshot with the circle
-    cv2.imshow("output", crownSpace)
+    cv2.imshow("crown", crownSpace)
     cv2.waitKey(1)
 
     if pos is not None:
         return True
     return False
-
 
 def check_timer():
     """
@@ -70,7 +69,7 @@ def check_timer():
     inverted = cv2.addWeighted(inverted, 4, inverted, 0, -175)
     # erode it slightly
     eroded = cv2.erode(inverted, None, iterations=1)
-    ret, threshed = cv2.threshold(eroded, 127, 255, cv2.THRESH_BINARY_INV)
+    ret, threshed = cv2.threshold(eroded, 230, 255, cv2.THRESH_BINARY_INV)
 
     # debug display
 
@@ -87,7 +86,22 @@ def check_level():
     """
     # capture the level number and return the string
     imgT = get_level_num()
-    level = get_level(imgT)
+    f = 4
+    size = (imgT.shape[1] * f, imgT.shape[0] * f)
+    scaled = cv2.resize(imgT, size)
+    inverted = cv2.bitwise_not(scaled)
+    # also bump up the contrast
+    inverted = cv2.addWeighted(inverted, 5, inverted, 0, -200)
+    # erode it slightly
+    eroded = cv2.erode(inverted, None, iterations=0)
+    blurred = cv2.blur(eroded, (5,5))
+    gray = cv2.cvtColor(blurred, cv2.COLOR_BGR2GRAY)
+    ret, out = cv2.threshold(gray, 225, 255, cv2.THRESH_BINARY_INV)
+    out = cv2.blur(out, (4, 4))
+
+    cv2.imshow("test", out)
+    level = get_level(out)
+    print(level)
     global prev_level
     dash = level.find('-')
     if dash == -1:
@@ -104,28 +118,45 @@ def check_level():
 has_crown = False
 acquire_time = -1
 prev_time = -1
-prev_level = -1
+prev_level = None
 
 # time into the cycle to warn player (eventually plus sound to play)
-alarms = [22 - 5, 22 - 4, 22 - 3, 22 - 2]
+alarms = [22 - 5, 22 - 4, 22 - 3, 22 - 2, 22-1]
 unfired_alarms = alarms.copy()
 
+level = None
 if __name__ == '__main__':
 
     while True:
         # TODO determine level
-        level = check_level()
+        # level = check_level()
+        # print(level)
+
         # if we don't have the crown, check if we do and continue
         if not has_crown:
             has_crown = check_crown(200)
             if has_crown:
-                print("Got crown")
+                # check levels
+                level = check_level()
+                if level == "same":
+                    print("Unpaused, resuming timer")
+                    # timer setup already
+                elif level == "new":
+                    print("Next level, resetting timer")
+                    prev_time = -1
+                    acquire_time = -1
+                else:
+                    # couldn't determine
+                    print("Couldn't tell if new level, assuming same level")
+
 
         # if we do have the crown, start checking for time
         if has_crown:
             cur_time = check_timer()
-            # filter invalid times
+
+            # if we can't get the time, set has_crown to false so we re-check
             if cur_time < 0:
+                has_crown = False
                 continue
 
             # if we have no previous time get it
@@ -147,7 +178,7 @@ if __name__ == '__main__':
                 if len(unfired_alarms) > 0:
                     time = unfired_alarms[0] + acquire_time
                     if time <= cur_time:
-                        print("WARNING:", time)
+                        print("WARNING:", len(unfired_alarms))
 
                         # pop the time so it stops firing
                         unfired_alarms.pop(0)
@@ -156,7 +187,4 @@ if __name__ == '__main__':
             if acquire_time + 22 < cur_time:
                 acquire_time = acquire_time + 22
                 unfired_alarms = alarms.copy()
-
-            print("cur_time:", cur_time)
-            print("acquire_time:", acquire_time)
-            print()
+                print()
