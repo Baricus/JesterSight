@@ -1,6 +1,7 @@
 import pytesseract
 
-#pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tesseract.exe'
+# to set tesseract to run from a specific location
+# pytesseract.pytesseract.tesseract_cmd = r'.\tesseractv5.0.0-rc1.20211030\tesseract.exe'
 
 
 def _parse_string_timer(string):

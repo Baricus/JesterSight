@@ -1,7 +1,7 @@
 import cv2
 
 from get_ui import *
-from dist_transform import dist_transform, dist_transform_cv2
+from dist_transform import dist_transform_cv2
 from template_search import template_search
 from parse_text import get_timer, get_level
 from check_color_rgb import color_check
@@ -27,7 +27,6 @@ def check_crown(thresh):
     dsts = dist_transform_cv2(crownSpace)
     pos, min = template_search(dsts, templateSmall, thresh)
 
-    # TODO color checks
     if pos is not None:
         x, y = pos
         colors = color_check(crownSpace, x, y)
@@ -39,7 +38,7 @@ def check_crown(thresh):
 
     # if we found the image, draw a circle
     # otherwise do nothing
-    if pos != None:
+    if pos is not None:
         x, y = pos
         show = cv2.circle(imgL, (x, y), 3, (255, 0, 0), 3)
     else:
@@ -63,7 +62,6 @@ def check_timer():
     f = 2
     size = (imgR.shape[1] * f, imgR.shape[0] * f)
     scaled = cv2.resize(imgR, size)
-    # tesseract v4 wants black text so we invert the image
     inverted = cv2.bitwise_not(scaled)
     # also bump up the contrast
     inverted = cv2.addWeighted(inverted, 4, inverted, 0, -175)
@@ -72,8 +70,8 @@ def check_timer():
     ret, threshed = cv2.threshold(eroded, 230, 255, cv2.THRESH_BINARY_INV)
 
     # debug display
-
-    cv2.imshow('timer', threshed)
+    cv2.imshow('timer', imgR)
+    cv2.imshow('timer processed', threshed)
     cv2.waitKey(1)
 
     return get_timer(threshed)
@@ -128,10 +126,6 @@ level = None
 if __name__ == '__main__':
 
     while True:
-        # TODO determine level
-        # level = check_level()
-        # print(level)
-
         # if we don't have the crown, check if we do and continue
         if not has_crown:
             has_crown = check_crown(200)
@@ -148,7 +142,6 @@ if __name__ == '__main__':
                 else:
                     # couldn't determine
                     print("Couldn't tell if new level, assuming same level")
-
 
         # if we do have the crown, start checking for time
         if has_crown:
